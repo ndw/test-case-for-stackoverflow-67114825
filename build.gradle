@@ -1,0 +1,23 @@
+task doall(dependsOn: ["copyA", "pointless_gzip"]) {
+  // nop
+}
+
+task copyA(type: Copy) {
+  from "src/main/data/"
+  into "${buildDir}"
+  include "*.xsd"
+}
+
+task pointless_tar(type: Exec) {
+  outputs.file "${buildDir}/pointless.tar"
+  commandLine 'tar', '-cf', "${buildDir}/pointless.tar", 'src'
+  doFirst {
+    mkdir("${buildDir}")
+  }
+}
+
+task pointless_gzip(dependsOn: ["pointless_tar"], type: Exec) {
+  inputs.file "${buildDir}/pointless.tar"
+  outputs.file "${buildDir}/pointless.tar.gz"
+  commandLine 'gzip', '-k', "${buildDir}/pointless.tar"
+}
